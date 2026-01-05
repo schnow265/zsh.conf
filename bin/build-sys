@@ -1,7 +1,0 @@
-#!/bin/bash
-
-build-cmake
-build-nvim
-
-#build-llamacpp
-#build-llvm
