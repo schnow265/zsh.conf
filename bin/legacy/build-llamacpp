@@ -17,7 +17,7 @@ fi
 
 source ~/vulkan/1.4.335.0/setup-env.sh
 
-CC=clamg CXX=clang++ HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
+CC=clang CXX=clang++ HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
     cmake -S . \
     -B build \
     -D CMAKE_C_COMPILER_LAUNCHER=ccache \
