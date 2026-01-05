@@ -106,11 +106,8 @@ if [[ -f "$cmd_file" ]]; then
 fi
 
 if [[ "$run_cmake" == true ]]; then
-  print "Running CMake configuration..."
   print "$current_cmd" > "$cmd_file"
   "${cmake_cmd[@]}"
-else
-  print "CMake configuration unchanged. Skipping configure step."
 fi
 
 if [[ "$SKIP_INSTALL" == false ]]; then
