@@ -1,6 +1,9 @@
 # PATH expansion
+
+ZSH_CFG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}/zsh"
+
 . "$HOME/.local/bin/env"
-export PATH="$HOME/.aspire/bin:$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH:/home/schnow265/.dotnet/tools"
+export PATH="$ZSH_CFG_HOME/bin:$HOME/.aspire/bin:$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH:/home/schnow265/.dotnet/tools"
 
 # pnpm
 export PNPM_HOME="/home/schnow265/.local/share/pnpm"

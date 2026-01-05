@@ -1,0 +1,103 @@
+#!/bin/bash
+set -eo pipefail
+
+SKIP_UPDATE=false
+SKIP_INSTALL=false
+SHALLOW_CLONE=false
+
+LLVM_TARGETS=host
+
+# Argument parsing
+for arg in "$@"; do
+    case "$arg" in
+        --skip-update)
+            SKIP_UPDATE=true
+            SHALLOW_CLONE=true
+            ;;
+        --no-install)
+            SKIP_INSTALL=true
+            ;;
+        --shallow)
+            SHALLOW_CLONE=true
+            SKIP_UPDATE=true
+            ;;
+        --all-arches)
+            LLVM_TARGETS=all
+            ;;
+        *)
+            echo "Unknown argument: $arg" >&2
+            exit 1
+            ;;
+    esac
+done
+
+clone_dir="$HOME/Documents/clones"
+repo_dir="$clone_dir/llvm-project"
+
+mkdir -p "$clone_dir"
+cd "$clone_dir"
+
+if [ -d "$repo_dir/.git" ]; then
+    cd "$repo_dir"
+
+    if [ "$SKIP_UPDATE" = false ]; then
+        if git rev-parse --is-shallow-repository | grep -q true; then
+            git fetch --unshallow
+            git pull
+        else
+            git pull
+        fi
+    fi
+
+else
+    if [ "$SHALLOW_CLONE" = true ]; then
+        git clone git@github.com:llvm/llvm-project.git --depth=1
+    else
+        git clone git@github.com:llvm/llvm-project.git
+    fi
+
+    cd "$repo_dir"
+fi
+
+mkdir -p build
+cd build
+
+cmake \
+    -G Ninja \
+    -D CMAKE_BUILD_TYPE=RelWithDebInfo \
+    -D CMAKE_C_COMPILER="clang" \
+    -D CMAKE_CXX_COMPILER="clang++" \
+    -D CMAKE_C_FLAGS="-march=native -O3" \
+    -D CMAKE_CXX_FLAGS="-march=native -O3" \
+    -D CMAKE_INSTALL_PREFIX="$HOME/.local/" \
+    \
+    -D LLVM_TARGETS_TO_BUILD="$LLVM_TARGETS" \
+    -D LLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lldb" \
+    -D LLVM_PARALLEL_COMPILE_JOBS=$(nproc) \
+    -D LLVM_PARALLEL_LINK_JOBS=2 \
+    -D LLVM_PARALLEL_TABLEGEN_JOBS=2 \
+    -D LLVM_CCACHE_BUILD=true \
+    -D LLVM_BUILD_BENCHMARKS=false \
+    -D LLVM_INCLUDE_BENCHMARKS=false \
+    -D LLVM_BUILD_EXAMPLES=true \
+    -D LLVM_BUILD_TOOLS=true \
+    -D LLVM_ENABLE_BINDINGS=false \
+    -D LLVM_ENABLE_LIBCXX=true \
+    \
+    -D LLVM_BUILD_DOCS=true \
+    -D LLVM_ENABLE_DOXYGEN=true \
+    \
+    -D LLDB_ENABLE_LIBEDIT=true \
+    -D LLDB_ENABLE_CURSES=true \
+    -D LLDB_ENABLE_LZMA=true \
+    -D LLDB_ENABLE_LIBXML2=true \
+    -D LLDB_ENABLE_PYTHON=true \
+    -D LLDB_ENABLE_LUA=true \
+    \
+    ../llvm
+
+ninja
+
+if [ "$SKIP_INSTALL" = true ]; then
+    ninja install
+fi
