@@ -8,6 +8,8 @@ setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 
+# welcome to my keybinds
+
 bindkey " " magic-space
 
 autoload -Uz edit-command-line
