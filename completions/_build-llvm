@@ -1,0 +1,28 @@
+#compdef build-llvm
+
+_arguments -s \
+  '--skip-update[Skip updating the LLVM repository]' \
+  '--no-install[Build only, do not install]' \
+  '--shallow[Perform a shallow clone and skip updates]' \
+  '--all-arches[Build all LLVM targets instead of host only]' \
+    '*--projects[Enable LLVM projects (semicolon-separated)]:projects:_llvm_projects'
+
+_llvm_projects() {
+  local -a projects
+  projects=(
+    bolt
+    clang
+    clang-tools-extra
+    compiler-rt
+    cross-project-tests
+    libc
+    libclc
+    lld
+    lldb
+    mlir
+    openmp
+    polly
+  )
+
+  _values -C -s ';' 'LLVM projects' $projects
+}

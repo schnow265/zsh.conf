@@ -7,25 +7,38 @@ SKIP_INSTALL=false
 SHALLOW_CLONE=false
 
 LLVM_TARGETS=host
+LLVM_PROJECTS="clang"   # default
 
 # Argument parsing
-for arg in "$@"; do
-  case "$arg" in
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     --skip-update)
       SKIP_UPDATE=true
+      shift
       ;;
     --no-install)
       SKIP_INSTALL=true
+      shift
       ;;
     --shallow)
       SHALLOW_CLONE=true
       SKIP_UPDATE=true
+      shift
       ;;
     --all-arches)
       LLVM_TARGETS=all
+      shift
+      ;;
+    --projects)
+      if [[ -z "$2" || "$2" == --* ]]; then
+        print -u2 "Error: --projects requires a semicolon-separated value"
+        exit 1
+      fi
+      LLVM_PROJECTS="$2"
+      shift 2
       ;;
     *)
-      print -u2 "Unknown argument: $arg"
+      print -u2 "Unknown argument: $1"
       exit 1
       ;;
   esac
@@ -39,14 +52,11 @@ cd "$clone_dir"
 
 if [[ -d "$repo_dir/.git" ]]; then
   cd "$repo_dir"
-
   if [[ "$SKIP_UPDATE" == false ]]; then
     if git rev-parse --is-shallow-repository | grep -q true; then
       git fetch --unshallow
-      git pull
-    else
-      git pull
     fi
+    git pull
   fi
 else
   if [[ "$SHALLOW_CLONE" == true ]]; then
@@ -54,7 +64,6 @@ else
   else
     git clone git@github.com:llvm/llvm-project.git
   fi
-
   cd "$repo_dir"
 fi
 
@@ -71,7 +80,7 @@ cmake_cmd=(
   -D CMAKE_CXX_FLAGS="-march=native -O3"
   -D CMAKE_INSTALL_PREFIX="$HOME/.local/"
   -D LLVM_TARGETS_TO_BUILD="$LLVM_TARGETS"
-  -D LLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lldb"
+  -D LLVM_ENABLE_PROJECTS="$LLVM_PROJECTS"
   -D LLVM_PARALLEL_COMPILE_JOBS="$(nproc)"
   -D LLVM_PARALLEL_LINK_JOBS=2
   -D LLVM_PARALLEL_TABLEGEN_JOBS=2
@@ -86,8 +95,8 @@ cmake_cmd=(
   -D LLVM_ENABLE_DOXYGEN=true
   -D LLDB_ENABLE_LIBEDIT=true
   -D LLDB_ENABLE_CURSES=true
-  -D LLDB_ENABLE_LZMA=true
-  -D LLDB_ENABLE_LIBXML2=true
+  -D LLDB_ENABLE_LZMA=false
+  -D LLDB_ENABLE_LIBXML2=false
   -D LLDB_ENABLE_PYTHON=true
   -D LLDB_ENABLE_LUA=true
   ../llvm

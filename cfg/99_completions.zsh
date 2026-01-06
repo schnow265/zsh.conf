@@ -1,6 +1,9 @@
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
+COMPLETION_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/zsh/completions"
+fpath=($COMPLETION_DIR $fpath)
+
 autoload -U compinit
 compinit
 zinit light Aloxaf/fzf-tab
