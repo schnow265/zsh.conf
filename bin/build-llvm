@@ -5,15 +5,25 @@ set -o pipefail
 SKIP_UPDATE=false
 SKIP_INSTALL=false
 SHALLOW_CLONE=false
+FORCE_NEW=false
 
 LLVM_TARGETS=host
 LLVM_PROJECTS="clang"   # default
+
+CFLAGS=""
+CXXFLAGS=""
+CC="gcc"
+CXX="g++"
 
 # Argument parsing
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skip-update)
       SKIP_UPDATE=true
+      shift
+      ;;
+    --force-new)
+      FORCE_NEW=true
       shift
       ;;
     --no-install)
@@ -35,6 +45,38 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
       LLVM_PROJECTS="$2"
+      shift 2
+      ;;
+    --c-flags)
+      if [[ -z "$2" || "$2" == --* ]]; then
+        print -u2 "Error: --cfalgs requires a string"
+        exit 1
+      fi
+      CFLAGS="$2"
+      shift 2
+      ;;
+    --cxx-flags)
+      if [[ -z "$2" || "$2" == --* ]]; then
+        print -u2 "Error: --cxxfalgs requires a string"
+        exit 1
+      fi
+      CXXFLAGS="$2"
+      shift 2
+      ;;
+    -cc)
+      if [[ -z "$2" || "$2" == --* ]]; then
+        print -u2 "Error: -cc requires a string"
+        exit 1
+      fi
+      CC="$2"
+      shift 2
+      ;;
+    -cxx)
+      if [[ -z "$2" || "$2" == --* ]]; then
+        print -u2 "Error: -cxx requires a string"
+        exit 1
+      fi
+      CXX="$2"
       shift 2
       ;;
     *)
@@ -67,6 +109,11 @@ else
   cd "$repo_dir"
 fi
 
+if [[ "$FORCE_NEW" == true ]]; then
+  echo "Removing llvm build directory..."
+  rm -rf build
+fi
+
 mkdir -p build
 cd build
 
@@ -74,11 +121,11 @@ cmake_cmd=(
   cmake
   -G Ninja
   -D CMAKE_BUILD_TYPE=RelWithDebInfo
-  -D CMAKE_C_COMPILER=clang
-  -D CMAKE_CXX_COMPILER=clang++
-  -D CMAKE_C_FLAGS="-march=native -O3"
-  -D CMAKE_CXX_FLAGS="-march=native -O3"
-  -D CMAKE_INSTALL_PREFIX="$HOME/.local/"
+  -D CMAKE_C_COMPILER=$CC
+  -D CMAKE_CXX_COMPILER=$CXX
+  -D CMAKE_C_FLAGS="$CFLAGS"
+  -D CMAKE_CXX_FLAGS="$CXXFLAGS"
+  -D CMAKE_INSTALL_PREFIX="$HOME/.llvm/"
   -D LLVM_TARGETS_TO_BUILD="$LLVM_TARGETS"
   -D LLVM_ENABLE_PROJECTS="$LLVM_PROJECTS"
   -D LLVM_PARALLEL_COMPILE_JOBS="$(nproc)"
@@ -92,7 +139,9 @@ cmake_cmd=(
   -D LLVM_ENABLE_BINDINGS=false
   -D LLVM_ENABLE_LIBCXX=false
   -D LLVM_BUILD_DOCS=true
-  -D LLVM_ENABLE_DOXYGEN=true
+  -D LLVM_ENABLE_LTO=Thin
+  -D LLVM_ENABLE_ZLIB=FORCE_ON
+  -D LLVM_ENABLE_ZSTD=FORCE_ON
   -D LLDB_ENABLE_LIBEDIT=true
   -D LLDB_ENABLE_CURSES=true
   -D LLDB_ENABLE_LZMA=false
