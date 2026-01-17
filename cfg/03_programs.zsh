@@ -15,5 +15,3 @@ zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
     atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
     atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
 zinit light zdharma-continuum/null
-
-zinit as from"gh-r" as"program" pick"lsd-*/lsd" for lsd-rs/lsd
