@@ -16,4 +16,4 @@ zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
     atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
 zinit light zdharma-continuum/null
 
-zinit as"program" from"gh-r" for ajeetdsouza/zoxide
+zinit as"program" from"gh-r" for @astral-sh/uv

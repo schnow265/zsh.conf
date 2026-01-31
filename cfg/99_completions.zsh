@@ -6,6 +6,8 @@ fpath=($COMPLETION_DIR $fpath)
 
 autoload -U compinit
 compinit
+# WHY WON'T YOU WORK OTHERWISE YOU FUCKING PIECE OF SHIT
 zinit light Aloxaf/fzf-tab
 
+zinit as"program" from"gh-r" for ajeetdsouza/zoxide
 eval "$(zoxide init zsh --cmd cd)"
