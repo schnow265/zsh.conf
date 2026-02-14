@@ -15,7 +15,11 @@ else
     cd "$repo_dir"
 fi
 
-source ~/vulkan/1.4.335.0/setup-env.sh
+source ~/vulkan/1.4.341.1/setup-env.sh
+
+#     -D CMAKE_CXX_FLAGS="-march=native -O3" \
+#    -D CMAKE_CC_FLAGS="-march=native -O3" \
+#    -D CMAKE_EXE_LINKER_FLAGS="-flto=thin" \
 
 CC=clang CXX=clang++ HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
     cmake -S . \
@@ -29,10 +33,7 @@ CC=clang CXX=clang++ HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
     -D GGML_VULKAN=ON \
     -D AMDGPU_TARGETS=gfx1030 \
     -D CMAKE_BUILD_TYPE=Release \
-    -D CMAKE_INSTALL_PREFIX=/home/schnow265/.local/ \
-    -D CMAKE_CXX_FLAGS="-march=native -O3" \
-    -D CMAKE_CC_FLAGS="-march=native -O3" \
-    -D CMAKE_EXE_LINKER_FLAGS="-flto=thin" \
+    -D CMAKE_INSTALL_PREFIX=/home/schnow265/.local-llms/ \
     -G Ninja
 
 cmake --build build --config Release --target install

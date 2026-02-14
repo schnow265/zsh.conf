@@ -16,6 +16,6 @@ fi
 
 git pull
 
-make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_CXX_FLAGS="-march=native" CMAKE_CC_FLAGS="-march=native"
+CMAKE_CC_COMPILER_LAUNCHER=ccache CMAKE_CXX_COMPILER_LAUNCHER=ccache CC=clang CXX=clang++ make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_CXX_FLAGS="-march=native" CMAKE_CC_FLAGS="-march=native"
 
 #make CMAKE_INSTALL_PREFIX=$HOME/.local/ install

@@ -1,4 +1,7 @@
-zinit as from"gh-r" as"program" for junegunn/fzf
+zinit for \
+    from'gh-r' as"program" \
+  junegunn/fzf
+
 
 export FZF_CTRL_R_OPTS="
   --reverse
