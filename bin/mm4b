@@ -4,17 +4,17 @@ set -euo pipefail
 DIR="${1:-.}"
 DIR="$(realpath "$DIR")"
 BASENAME="$(basename "$DIR")"
-OUTPUT="$DIR/../$BASENAME.mp3"
+OUTPUT="$DIR/$BASENAME.m4b"
 
 TMPFILE="$(mktemp)"
 
-find "$DIR" -maxdepth 1 -type f -iname "*.mp3" -print0 \
+find "$DIR" -maxdepth 1 -type f -iname "*.m4b" -print0 \
   | sort -z \
   | while IFS= read -r -d '' file; do
         printf "file '%s'\n" "$file"
     done > "$TMPFILE"
 
-ffmpeg -f concat -safe 0 -i "$TMPFILE" -c copy "$OUTPUT"
+ffmpeg -f concat -safe 0 -i "$TMPFILE" -c:a aac -b:a 128k "$OUTPUT"
 
 rm "$TMPFILE"
 
