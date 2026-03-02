@@ -1,3 +1,5 @@
+zinit as"program" from"gh-r" for kitware/cmake
+
 zinit as"program" from"gh-r" for ccache/ccache
 
 zinit as"program" make'install' atclone'make CMAKE_INSTALL_PREFIX=$ZPFX CMAKE_BUILD_TYPE=RelWithDebInfo' atpull'%atclone' pick"$ZPFX/bin/nvim" for \
