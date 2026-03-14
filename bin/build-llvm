@@ -92,6 +92,8 @@ repo_dir="$clone_dir/llvm-project"
 mkdir -p "$clone_dir"
 cd "$clone_dir"
 
+updated=0
+
 if [[ -d "$repo_dir/.git" ]]; then
   cd "$repo_dir"
   if [[ "$SKIP_UPDATE" == false ]]; then
@@ -99,6 +101,7 @@ if [[ -d "$repo_dir/.git" ]]; then
       git fetch --unshallow
     fi
     git pull
+    updated=1
   fi
 else
   if [[ "$SHALLOW_CLONE" == true ]]; then
@@ -160,6 +163,9 @@ if [[ -f "$cmd_file" ]]; then
   stored_cmd="$(<"$cmd_file")"
   if [[ "$stored_cmd" == "$current_cmd" ]]; then
     run_cmake=false
+    if [[ "$updated" == "1"]]; then
+        run_cmake=true
+    fi
   fi
 fi
 

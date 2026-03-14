@@ -2,7 +2,7 @@
 
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
-[[ -d "$HOME/.aspire/bin" ]] $$ export PATH="$HOME/.aspire/bin:$PATH"
+[[ -d "$HOME/.aspire/bin" ]] && export PATH="$HOME/.aspire/bin:$PATH"
 [[ -d "$HOME/.local/share/gem/ruby/3.4.0/bin" ]] && export PATH="$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH"
 [[ -d "$HOME/.dotnet/tools" ]] && export PATH="$PATH:$HOME/.dotnet/tools"
 
